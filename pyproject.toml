@@ -48,10 +48,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/HealthyLineups/recklock-discover"
-Documentation = "https://github.com/HealthyLineups/recklock-discover/blob/main/README.md"
-Repository = "https://github.com/HealthyLineups/recklock-discover"
-Issues = "https://github.com/HealthyLineups/recklock-discover/issues"
+Homepage = "https://github.com/robbiej24/ReckLockDiscover"
+Documentation = "https://github.com/robbiej24/ReckLockDiscover/blob/main/README.md"
+Repository = "https://github.com/robbiej24/ReckLockDiscover"
+Issues = "https://github.com/robbiej24/ReckLockDiscover/issues"
 
 [project.scripts]
 recklock-discover = "recklock_scanner.cli:main"

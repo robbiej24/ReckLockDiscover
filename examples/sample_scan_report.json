@@ -215,7 +215,7 @@
     "find_e70c699ec38e"
   ],
   "scanned_at": "2026-05-08T21:09:06Z",
-  "scanned_path": "/Users/robertreck/Desktop/Documents/HealthyLineups/recklock-discover/examples/sample_repo",
+  "scanned_path": "examples/sample_repo",
   "scanner": "recklock-discover",
   "scanner_version": "1.0.0"
 }

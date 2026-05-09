@@ -115,7 +115,7 @@ See **[docs/detection-rules.md](docs/detection-rules.md)** for the full rule cat
 
 ## Manifest export (`--export-manifests`)
 
-When enabled, the scanner writes **unsigned** YAML manifests compatible with **[ReckLock Registry](https://github.com/HealthyLineups/recklock-registry)** import flows — one file per eligible finding (`register`, `govern`, or `manual_review` recommendations).
+When enabled, the scanner writes **unsigned** YAML manifests compatible with **[ReckLock Registry](https://github.com/robbiej24/ReckLockRegistry)** import flows — one file per eligible finding (`register`, `govern`, or `manual_review` recommendations).
 
 Default output directory:
 
