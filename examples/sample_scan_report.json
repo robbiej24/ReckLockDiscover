@@ -1,0 +1,221 @@
+{
+  "critical_findings": [
+    "find_7ae45ad102ea"
+  ],
+  "files_matched": 4,
+  "files_scanned": 4,
+  "findings": [
+    {
+      "confidence": "high",
+      "finding_id": "find_0d5658b41509",
+      "finding_type": "scheduled_job",
+      "likely_capabilities": [
+        "ci_pipeline",
+        "scheduled_execution"
+      ],
+      "likely_permission_scopes": [
+        "ci.execute",
+        "repository.write",
+        "scheduler.trigger"
+      ],
+      "line_numbers": [
+        2,
+        4,
+        9
+      ],
+      "name": "Nightly",
+      "path": ".github/workflows/nightly.yml",
+      "rationale": "Classified as scheduled_job (high confidence) at risk=medium. Recommended action: register. Top signals: GitHub Actions schedule, GitHub Actions workflow body, GitHub Actions workflow file, cron / crontab.",
+      "recommended_action": "register",
+      "risk_level": "medium",
+      "signals": [
+        {
+          "category": "ci_cd",
+          "line_number": null,
+          "name": "GitHub Actions workflow file",
+          "redacted_snippet": null
+        },
+        {
+          "category": "schedule",
+          "line_number": 4,
+          "name": "cron / crontab",
+          "redacted_snippet": "    - cron: \"0 6 * * *\""
+        },
+        {
+          "category": "schedule",
+          "line_number": 2,
+          "name": "GitHub Actions schedule",
+          "redacted_snippet": "on:"
+        },
+        {
+          "category": "ci_cd",
+          "line_number": 9,
+          "name": "GitHub Actions workflow body",
+          "redacted_snippet": "      - uses: actions/checkout@v4"
+        }
+      ]
+    },
+    {
+      "confidence": "medium",
+      "finding_id": "find_48cdabc5d172",
+      "finding_type": "deployment_workflow",
+      "likely_capabilities": [
+        "deploy_code",
+        "infrastructure_mutate"
+      ],
+      "likely_permission_scopes": [
+        "infrastructure.write",
+        "production.deploy"
+      ],
+      "line_numbers": [
+        3,
+        4
+      ],
+      "name": "Production",
+      "path": "deploy/production.sh",
+      "rationale": "Classified as deployment_workflow (medium confidence) at risk=high. Recommended action: register. Top signals: aws CLI invocation, kubectl invocation.",
+      "recommended_action": "register",
+      "risk_level": "high",
+      "signals": [
+        {
+          "category": "deploy_infra",
+          "line_number": 3,
+          "name": "kubectl invocation",
+          "redacted_snippet": "kubectl apply -f ./k8s/"
+        },
+        {
+          "category": "deploy_infra",
+          "line_number": 4,
+          "name": "aws CLI invocation",
+          "redacted_snippet": "aws ecs update-service --cluster prod --service api --force-new-deployment"
+        }
+      ]
+    },
+    {
+      "confidence": "high",
+      "finding_id": "find_7ae45ad102ea",
+      "finding_type": "payment_or_financial_workflow",
+      "likely_capabilities": [
+        "financial_data_access",
+        "initiate_payment",
+        "llm_inference"
+      ],
+      "likely_permission_scopes": [
+        "ai.invoke",
+        "finance.read",
+        "payments.initiate"
+      ],
+      "line_numbers": [
+        6
+      ],
+      "name": "Package",
+      "path": "package.json",
+      "rationale": "Classified as payment_or_financial_workflow (high confidence) at risk=critical. Recommended action: govern. Top signals: Stripe SDK / API, dependency declares OpenAI SDK, dependency declares Stripe SDK, dependency manifest.",
+      "recommended_action": "govern",
+      "risk_level": "critical",
+      "signals": [
+        {
+          "category": "file_marker",
+          "line_number": null,
+          "name": "dependency manifest",
+          "redacted_snippet": null
+        },
+        {
+          "category": "llm_ai",
+          "line_number": null,
+          "name": "dependency declares OpenAI SDK",
+          "redacted_snippet": null
+        },
+        {
+          "category": "payments_financial",
+          "line_number": null,
+          "name": "dependency declares Stripe SDK",
+          "redacted_snippet": null
+        },
+        {
+          "category": "payments_financial",
+          "line_number": 6,
+          "name": "Stripe SDK / API",
+          "redacted_snippet": "    \"stripe\": \"^14.0.0\""
+        }
+      ]
+    },
+    {
+      "confidence": "medium",
+      "finding_id": "find_e70c699ec38e",
+      "finding_type": "ai_agent",
+      "likely_capabilities": [
+        "agent_tool_calls",
+        "llm_inference",
+        "write_database"
+      ],
+      "likely_permission_scopes": [
+        "ai.invoke",
+        "database.write",
+        "tools.invoke"
+      ],
+      "line_numbers": [
+        3,
+        7,
+        11
+      ],
+      "name": "Chat Agent",
+      "path": "src/chat_agent.py",
+      "rationale": "Classified as ai_agent (medium confidence) at risk=high. Recommended action: register. Top signals: database write operation, imports or calls OpenAI, tool calling / function calling.",
+      "recommended_action": "register",
+      "risk_level": "high",
+      "signals": [
+        {
+          "category": "llm_ai",
+          "line_number": 3,
+          "name": "imports or calls OpenAI",
+          "redacted_snippet": "from openai import OpenAI"
+        },
+        {
+          "category": "llm_ai",
+          "line_number": 11,
+          "name": "tool calling / function calling",
+          "redacted_snippet": "    tool_choice=\"auto\","
+        },
+        {
+          "category": "database",
+          "line_number": 7,
+          "name": "database write operation",
+          "redacted_snippet": "resp = client.chat.completions.create("
+        }
+      ]
+    }
+  ],
+  "findings_by_action": {
+    "govern": 1,
+    "register": 3
+  },
+  "findings_by_risk": {
+    "critical": 1,
+    "high": 2,
+    "medium": 1
+  },
+  "findings_by_type": {
+    "ai_agent": 1,
+    "deployment_workflow": 1,
+    "payment_or_financial_workflow": 1,
+    "scheduled_job": 1
+  },
+  "findings_count": 4,
+  "high_findings": [
+    "find_48cdabc5d172",
+    "find_e70c699ec38e"
+  ],
+  "recommended_governance_targets": [
+    "find_7ae45ad102ea"
+  ],
+  "recommended_registration_targets": [
+    "find_0d5658b41509",
+    "find_48cdabc5d172",
+    "find_e70c699ec38e"
+  ],
+  "scanned_at": "2026-05-08T21:09:06Z",
+  "scanned_path": "/Users/robertreck/Desktop/Documents/HealthyLineups/recklock-discover/examples/sample_repo",
+  "scanner": "recklock-discover",
+  "scanner_version": "1.0.0"
+}
