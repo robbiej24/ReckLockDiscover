@@ -75,7 +75,7 @@ def report_to_json(report: ScannerReport) -> str:
 
 def print_rich_summary(report: ScannerReport) -> None:
     """Colored summary tables after a scan."""
-        _console.print(f"[bold green]ReckLock Discover[/bold green] v{report.scanner_version}")
+    _console.print(f"[bold green]ReckLock Discover[/bold green] v{report.scanner_version}")
     _console.print(f"  [bold]Path[/bold]    {report.scanned_path}")
     _console.print(f"  [bold]When[/bold]    {report.scanned_at}")
     _console.print(f"  [bold]Files[/bold]   scanned={report.files_scanned}  with_findings={report.files_matched}")
