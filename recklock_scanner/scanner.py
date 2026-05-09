@@ -7,16 +7,16 @@ import os
 from datetime import UTC, datetime
 from pathlib import Path
 
-from agenttrust_scanner.classifiers import classify_finding
-from agenttrust_scanner.constants import MAX_FILE_BYTES, MAX_FILES, SCANNER_VERSION
-from agenttrust_scanner.detectors import detect_signals_for_file
-from agenttrust_scanner.models import (
+from recklock_scanner.classifiers import classify_finding
+from recklock_scanner.constants import MAX_FILE_BYTES, MAX_FILES, SCANNER_VERSION
+from recklock_scanner.detectors import detect_signals_for_file
+from recklock_scanner.models import (
     Confidence,
     ScannerFinding,
     ScannerReport,
     at_least_confidence,
 )
-from agenttrust_scanner.utils import (
+from recklock_scanner.utils import (
     matches_any,
     normalize_excludes,
     should_skip_dir,

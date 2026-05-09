@@ -21,7 +21,7 @@ Starting from `low`, risk bumps upward when signals indicate:
 - Outbound comms, shell execution, database writes, deploy/infra tooling, or LLM tool calling → often **high**  
 - Payments combined with money-movement indicators or database writes, deploy + secrets, or deploy + shell + secrets → often **critical**  
 
-Exact merging rules live in `agenttrust_scanner/classifiers.py`.
+Exact merging rules live in `recklock_scanner/classifiers.py`.
 
 ## Recommended actions
 

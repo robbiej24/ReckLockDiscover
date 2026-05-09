@@ -5,8 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from agenttrust_scanner.constants import DEFAULT_JSON_FILENAME, DEFAULT_MARKDOWN_FILENAME
-from agenttrust_scanner.models import ScannerFinding, ScannerReport
+from recklock_scanner.constants import DEFAULT_JSON_FILENAME, DEFAULT_MARKDOWN_FILENAME
+from recklock_scanner.models import ScannerFinding, ScannerReport
 
 
 def write_json_report(report: ScannerReport, out_path: Path) -> Path:

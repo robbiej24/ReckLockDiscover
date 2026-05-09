@@ -10,13 +10,17 @@ from typing import Any
 
 import yaml
 
-from agenttrust_scanner.constants import MANIFEST_REGISTRY_VERSION
-from agenttrust_scanner.manifest_schema import AgentManifest, AgentType
-from agenttrust_scanner.models import FindingType, ScannerFinding
+from recklock_scanner.constants import MANIFEST_REGISTRY_VERSION
+from recklock_scanner.manifest_schema import AgentManifest, AgentType
+from recklock_scanner.models import FindingType, ScannerFinding
 
 DEFAULT_EXPORT_DIRNAME = "recklock_manifest_exports"
 
 EXPORTABLE_ACTIONS = frozenset({"register", "govern", "manual_review"})
+
+# Registry slug segment: cap length & avoid truncation ending on `-`, which breaks
+# ``agt_[a-z0-9]+(?:-[a-z0-9]+)*_<hash>`` (no trailing hyphen allowed).
+_MAX_AGENT_ID_SLUG_LEN = 40
 
 _SLUG_SAFE = re.compile(r"[^a-z0-9\-]+")
 
@@ -32,7 +36,12 @@ def _slugify(source_path: str) -> str:
     s = re.sub(r"-+", "-", s).strip("-")
     if not s:
         s = "scanned"
-    return s[:56]
+    s = s[:_MAX_AGENT_ID_SLUG_LEN]
+    s = s.strip("-")
+    s = re.sub(r"-+", "-", s)
+    if not s:
+        s = "scanned"
+    return s
 
 
 def _short_hash(source_path: str) -> str:
@@ -40,7 +49,11 @@ def _short_hash(source_path: str) -> str:
 
 
 def compute_agent_id(source_path: str) -> str:
-    """Return ``agt_<slug>_<shorthash>`` derived from a repo-relative path."""
+    """Return ``agt_<slug>_<shorthash>`` derived from a repo-relative path.
+
+    The slug is capped (see ``_MAX_AGENT_ID_SLUG_LEN``) and trimmed so the
+    result matches ``AgentManifest``'s ``agent_id`` pattern (no trailing ``-``).
+    """
     return f"agt_{_slugify(source_path)}_{_short_hash(source_path)}"
 
 

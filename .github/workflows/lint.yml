@@ -22,7 +22,7 @@ jobs:
           python -m pip install -e ".[dev]"
 
       - name: Ruff check
-        run: ruff check agenttrust_scanner tests
+        run: ruff check recklock_scanner tests
 
       - name: Ruff format
-        run: ruff format --check agenttrust_scanner tests
+        run: ruff format --check recklock_scanner tests

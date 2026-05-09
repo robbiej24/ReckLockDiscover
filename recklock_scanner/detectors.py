@@ -10,8 +10,8 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-from agenttrust_scanner.models import ScannerSignal
-from agenttrust_scanner.redaction import redact_snippet
+from recklock_scanner.models import ScannerSignal
+from recklock_scanner.redaction import redact_snippet
 
 # --- Categories used across detectors -----------------------------------------------------
 CAT_LLM = "llm_ai"

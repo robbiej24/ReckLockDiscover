@@ -5,15 +5,15 @@ from __future__ import annotations
 from pathlib import Path
 
 import yaml
-from agenttrust_scanner.manifest_export import (
+from recklock_scanner.manifest_export import (
     EXPORTABLE_ACTIONS,
     build_manifest_dict,
     compute_agent_id,
     export_manifests,
     validate_manifest_dict,
 )
-from agenttrust_scanner.manifest_schema import AgentManifest
-from agenttrust_scanner.scanner import scan_repository
+from recklock_scanner.manifest_schema import AGENT_ID_PATTERN, AgentManifest
+from recklock_scanner.scanner import scan_repository
 
 SCANNER_VERSION = "0.1.0-test"
 
@@ -88,6 +88,18 @@ def test_compute_agent_id_changes_with_path() -> None:
     a = compute_agent_id("a/b/c.py")
     b = compute_agent_id("a/b/d.py")
     assert a != b
+
+
+def test_compute_agent_id_long_path_matches_schema_and_slug_cap() -> None:
+    long_path = (
+        "Core/fantasy-dfs-backend/app/routers/"
+        "compliance-identity-and-access-test-routes.py"
+    )
+    aid = compute_agent_id(long_path)
+    assert AGENT_ID_PATTERN.match(aid)
+    slug = aid.removeprefix("agt_").rsplit("_", 1)[0]
+    assert len(slug) <= 40
+    assert not slug.endswith("-")
 
 
 def test_exported_yaml_round_trips_registry_schema(tmp_path: Path) -> None:

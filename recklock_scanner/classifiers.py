@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from agenttrust_scanner.detectors import (
+from recklock_scanner.detectors import (
     CAT_BROWSER,
     CAT_CI_CD,
     CAT_DATABASE,
@@ -14,7 +14,7 @@ from agenttrust_scanner.detectors import (
     CAT_SECRETS,
     CAT_SHELL,
 )
-from agenttrust_scanner.models import (
+from recklock_scanner.models import (
     Confidence,
     FindingType,
     RecommendedAction,

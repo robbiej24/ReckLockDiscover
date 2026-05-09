@@ -28,6 +28,6 @@ htmlcov/
 coverage.xml
 *.cover
 .DS_Store
-agenttrust_scan_report.json
-agenttrust_scan_report.md
-/agenttrust_manifest_exports/
+recklock_discover_scan_report.json
+recklock_discover_scan_report.md
+/recklock_manifest_exports/

@@ -5,8 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from agenttrust_scanner.report import render_markdown_report, write_reports
-from agenttrust_scanner.scanner import scan_repository
+from recklock_scanner.report import render_markdown_report, write_reports
+from recklock_scanner.scanner import scan_repository
 
 
 def _populated_report(tmp_path: Path):

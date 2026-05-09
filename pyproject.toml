@@ -48,16 +48,16 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/agenttrust/recklock-discover"
-Documentation = "https://github.com/agenttrust/recklock-discover/blob/main/README.md"
-Repository = "https://github.com/agenttrust/recklock-discover"
-Issues = "https://github.com/agenttrust/recklock-discover/issues"
+Homepage = "https://github.com/HealthyLineups/recklock-discover"
+Documentation = "https://github.com/HealthyLineups/recklock-discover/blob/main/README.md"
+Repository = "https://github.com/HealthyLineups/recklock-discover"
+Issues = "https://github.com/HealthyLineups/recklock-discover/issues"
 
 [project.scripts]
-recklock-discover = "agenttrust_scanner.cli:main"
+recklock-discover = "recklock_scanner.cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["agenttrust_scanner"]
+packages = ["recklock_scanner"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -67,7 +67,7 @@ addopts = "-q"
 [tool.ruff]
 target-version = "py311"
 line-length = 120
-src = ["agenttrust_scanner", "tests"]
+src = ["recklock_scanner", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
@@ -75,4 +75,4 @@ select = ["E", "F", "I", "UP", "B"]
 extend-ignore = ["B008"]
 
 [tool.ruff.lint.per-file-ignores]
-"agenttrust_scanner/detectors.py" = ["E501"]
+"recklock_scanner/detectors.py" = ["E501"]

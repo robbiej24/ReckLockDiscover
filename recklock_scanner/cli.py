@@ -11,15 +11,15 @@ from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.table import Table
 
-from agenttrust_scanner.constants import SCANNER_VERSION
-from agenttrust_scanner.manifest_export import (
+from recklock_scanner.constants import SCANNER_VERSION
+from recklock_scanner.manifest_export import (
     DEFAULT_EXPORT_DIRNAME,
     EXPORTABLE_ACTIONS,
     export_manifests,
 )
-from agenttrust_scanner.models import Confidence, ScannerReport
-from agenttrust_scanner.report import write_reports
-from agenttrust_scanner.scanner import scan_repository
+from recklock_scanner.models import Confidence, ScannerReport
+from recklock_scanner.report import write_reports
+from recklock_scanner.scanner import scan_repository
 
 app = typer.Typer(
     name="recklock-discover",

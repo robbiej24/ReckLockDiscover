@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from agenttrust_scanner.scanner import scan_repository
+from recklock_scanner.scanner import scan_repository
 
 
 def test_scan_requires_directory(tmp_path: Path) -> None:

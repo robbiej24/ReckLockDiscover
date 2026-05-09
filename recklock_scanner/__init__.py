@@ -1,7 +1,7 @@
 """ReckLock Discover — static discovery for AI agents & sensitive automation."""
 
-from agenttrust_scanner.constants import SCANNER_VERSION
-from agenttrust_scanner.models import (
+from recklock_scanner.constants import SCANNER_VERSION
+from recklock_scanner.models import (
     Confidence,
     FindingType,
     RecommendedAction,
@@ -10,7 +10,7 @@ from agenttrust_scanner.models import (
     ScannerReport,
     ScannerSignal,
 )
-from agenttrust_scanner.scanner import scan_repository
+from recklock_scanner.scanner import scan_repository
 
 __all__ = [
     "SCANNER_VERSION",

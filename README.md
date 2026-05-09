@@ -65,12 +65,12 @@ Common flags:
 
 | Flag | Purpose |
 | --- | --- |
-| `--output-dir`, `-o` | Where to write `agenttrust_scan_report.json` & `.md` (default: cwd) |
+| `--output-dir`, `-o` | Where to write `recklock_discover_scan_report.json` & `.md` (default: cwd) |
 | `--format`, `-f` | `human` (default) or `json` (full report on stdout) |
 | `--min-confidence` | `low` \| `medium` \| `high` — drop lower-confidence findings |
 | `--include` | Comma-separated globs (e.g. `*.py,.github/workflows/*.yml`) |
 | `--exclude` | Extra directory names or globs to skip |
-| `--export-manifests` | Emit draft YAML manifests under `agenttrust_manifest_exports/` |
+| `--export-manifests` | Emit draft YAML manifests under `recklock_manifest_exports/` |
 | `--manifest-dir` | Override manifest export directory |
 
 ---
@@ -115,12 +115,12 @@ See **[docs/detection-rules.md](docs/detection-rules.md)** for the full rule cat
 
 ## Manifest export (`--export-manifests`)
 
-When enabled, the scanner writes **unsigned** YAML manifests compatible with **[ReckLock Registry](https://github.com/agenttrust/recklock-registry)** import flows — one file per eligible finding (`register`, `govern`, or `manual_review` recommendations).
+When enabled, the scanner writes **unsigned** YAML manifests compatible with **[ReckLock Registry](https://github.com/HealthyLineups/recklock-registry)** import flows — one file per eligible finding (`register`, `govern`, or `manual_review` recommendations).
 
 Default output directory:
 
 ```
-agenttrust_manifest_exports/
+recklock_manifest_exports/
 ```
 
 Treat these as **drafts**: edit names, scopes, & risk before publishing. See **[docs/manifest-export.md](docs/manifest-export.md)**.
@@ -164,8 +164,8 @@ ReckLock Discover is useful **on its own** for visibility & inventory. If you us
 ```bash
 pip install -e ".[dev]"
 pytest
-ruff check agenttrust_scanner tests
-ruff format --check agenttrust_scanner tests
+ruff check recklock_scanner tests
+ruff format --check recklock_scanner tests
 ```
 
 ---

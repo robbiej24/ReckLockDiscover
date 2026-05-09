@@ -7,7 +7,7 @@ Pass `--export-manifests` to emit **unsigned** YAML manifests suitable for revie
 Defaults to:
 
 ```
-<output-dir>/agenttrust_manifest_exports/
+<output-dir>/recklock_manifest_exports/
 ```
 
 Override with `--manifest-dir`.

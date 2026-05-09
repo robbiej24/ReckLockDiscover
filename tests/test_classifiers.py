@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from agenttrust_scanner.classifiers import classify_finding
-from agenttrust_scanner.models import ScannerSignal
+from recklock_scanner.classifiers import classify_finding
+from recklock_scanner.models import ScannerSignal
 
 
 def test_workflow_file_becomes_ci_cd_not_unknown() -> None:

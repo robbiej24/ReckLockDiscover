@@ -33,4 +33,4 @@ Scannable paths include standard extensions (Python/TS/JS/YAML/JSON/TOML/shell),
 
 Large/binary files are skipped; each file is capped at 1 MiB of text.
 
-See `agenttrust_scanner/detectors.py` for the authoritative pattern list.
+See `recklock_scanner/detectors.py` for the authoritative pattern list.
