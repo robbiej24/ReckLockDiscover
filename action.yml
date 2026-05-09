@@ -1,0 +1,95 @@
+name: "ReckLock Discover"
+description: "Offline static analyzer that finds AI agents, automations, CI/CD workflows, deploy scripts & sensitive execution paths in your repository."
+inputs:
+  repo-path:
+    description: "Repository path to scan."
+    required: false
+    default: "."
+  output-dir:
+    description: "Directory for JSON & Markdown reports (recklock_discover_scan_report.json & .md). Empty uses the job working directory."
+    required: false
+    default: ""
+  min-confidence:
+    description: "Optional minimum confidence: low, medium, or high."
+    required: false
+    default: ""
+  include:
+    description: "Optional comma-separated include globs (passed to --include)."
+    required: false
+    default: ""
+  exclude:
+    description: "Optional comma-separated extra excludes (passed to --exclude)."
+    required: false
+    default: ""
+  export-manifests:
+    description: "When true, export draft ReckLock Registry YAML manifests for eligible findings."
+    required: false
+    default: "false"
+  add-to-registry:
+    description: "When true, opt in to writing draft ReckLock Registry YAML manifests for eligible findings. CI defaults to false."
+    required: false
+    default: "false"
+  manifest-dir:
+    description: "Manifest export directory when export-manifests is true (default is <output-dir>/recklock_manifest_exports)."
+    required: false
+    default: ""
+  format:
+    description: "CLI log format: human (default) or json (full report on stdout)."
+    required: false
+    default: "human"
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    - name: Install ReckLock Discover
+      shell: bash
+      run: |
+        set -euo pipefail
+        python3 -m pip install --upgrade pip setuptools wheel
+        python3 -m pip install "${{ github.action_path }}"
+    - name: Run ReckLock Discover scan
+      shell: bash
+      run: |
+        set -euo pipefail
+        SCAN_PATH="${{ inputs.repo-path }}"
+        if [[ "$SCAN_PATH" != /* ]]; then
+          SCAN_PATH="${{ github.workspace }}/$SCAN_PATH"
+        fi
+        OUT_ARGS=()
+        OD="${{ inputs.output-dir }}"
+        if [ -n "$OD" ]; then
+          if [[ "$OD" != /* ]]; then
+            OD="${{ github.workspace }}/$OD"
+          fi
+          OUT_ARGS+=(--output-dir "$OD")
+        fi
+        MC="${{ inputs.min-confidence }}"
+        if [ -n "$MC" ]; then
+          OUT_ARGS+=(--min-confidence "$MC")
+        fi
+        INC="${{ inputs.include }}"
+        if [ -n "$INC" ]; then
+          OUT_ARGS+=(--include "$INC")
+        fi
+        EXC="${{ inputs.exclude }}"
+        if [ -n "$EXC" ]; then
+          OUT_ARGS+=(--exclude "$EXC")
+        fi
+        if [ "${{ inputs.export-manifests }}" = "true" ] || [ "${{ inputs.add-to-registry }}" = "true" ]; then
+          if [ "${{ inputs.add-to-registry }}" = "true" ]; then
+            OUT_ARGS+=(--add-to-registry)
+          else
+            OUT_ARGS+=(--export-manifests)
+          fi
+          MD="${{ inputs.manifest-dir }}"
+          if [ -n "$MD" ]; then
+            if [[ "$MD" != /* ]]; then
+              MD="${{ github.workspace }}/$MD"
+            fi
+            OUT_ARGS+=(--manifest-dir "$MD")
+          fi
+        fi
+        OUT_ARGS+=(--format "${{ inputs.format }}")
+        recklock-discover scan "$SCAN_PATH" "${OUT_ARGS[@]}"

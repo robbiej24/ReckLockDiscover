@@ -91,10 +91,7 @@ def test_compute_agent_id_changes_with_path() -> None:
 
 
 def test_compute_agent_id_long_path_matches_schema_and_slug_cap() -> None:
-    long_path = (
-        "Core/fantasy-dfs-backend/app/routers/"
-        "compliance-identity-and-access-test-routes.py"
-    )
+    long_path = "Core/fantasy-dfs-backend/app/routers/compliance-identity-and-access-test-routes.py"
     aid = compute_agent_id(long_path)
     assert AGENT_ID_PATTERN.match(aid)
     slug = aid.removeprefix("agt_").rsplit("_", 1)[0]

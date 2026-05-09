@@ -58,6 +58,7 @@ recklock-discover scan ~/repos/my-project
 recklock-discover scan . --output-dir reports/
 recklock-discover scan . --format json
 recklock-discover scan . --min-confidence medium
+recklock-discover scan . --add-to-registry
 recklock-discover scan . --export-manifests
 ```
 
@@ -70,6 +71,7 @@ Common flags:
 | `--min-confidence` | `low` \| `medium` \| `high` — drop lower-confidence findings |
 | `--include` | Comma-separated globs (e.g. `*.py,.github/workflows/*.yml`) |
 | `--exclude` | Extra directory names or globs to skip |
+| `--add-to-registry` / `--skip-registry` | Opt in or out of writing draft ReckLock Registry manifests after discovery |
 | `--export-manifests` | Emit draft YAML manifests under `recklock_manifest_exports/` |
 | `--manifest-dir` | Override manifest export directory |
 
@@ -116,6 +118,17 @@ See **[docs/detection-rules.md](docs/detection-rules.md)** for the full rule cat
 ## Manifest export (`--export-manifests`)
 
 When enabled, the scanner writes **unsigned** YAML manifests compatible with **[ReckLock Registry](https://github.com/robbiej24/ReckLockRegistry)** import flows — one file per eligible finding (`register`, `govern`, or `manual_review` recommendations).
+
+For local human runs, ReckLock Discover can also ask whether you want to take the next step:
+
+> ReckLock Discover found 6 AI agents. Add them to your ReckLock Registry so you can display:
+>
+> - That you own them
+> - What their capabilities are
+> - Which risks they carry &
+> - Allow other people who want to license your agents to contact you?
+
+Choosing yes writes the same draft manifests as `--export-manifests`. Non-interactive runs and JSON output never prompt; use `--add-to-registry` to opt in explicitly or `--skip-registry` to skip.
 
 Default output directory:
 
