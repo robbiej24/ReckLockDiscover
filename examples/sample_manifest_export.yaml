@@ -3,7 +3,7 @@ name: Production
 version: 0.0.0-scanner
 developer:
   name: Unknown
-description: Auto-discovered by ReckLock Discover v1.0.2 from `deploy/production.sh`.
+description: Auto-discovered by ReckLock Discover v1.0.4 from `deploy/production.sh`.
   This is an unsigned draft manifest — review and edit before signing or registering.
   Detected as deployment_workflow with medium confidence at high risk.
 agent_type: workflow_agent
@@ -22,7 +22,7 @@ metadata:
   updated_at: '2026-05-08T21:09:06Z'
   registry_version: 0.1.0
   scanner_generated: true
-  scanner_version: 1.0.2
+  scanner_version: 1.0.4
   source_path: deploy/production.sh
   detected_signals:
   - name: kubectl invocation

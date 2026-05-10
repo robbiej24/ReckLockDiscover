@@ -6,7 +6,7 @@ inputs:
     required: false
     default: "."
   output-dir:
-    description: "Directory for JSON & Markdown reports (recklock_discover_scan_report.json & .md). Empty uses the job working directory."
+    description: "Directory for scan outputs: recklock_discover_scan_report.json, recklock_discover_summary_of_findings.md, recklock_discover_details_of_findings.md. Empty uses the job working directory."
     required: false
     default: ""
   min-confidence:

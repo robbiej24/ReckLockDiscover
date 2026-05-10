@@ -27,11 +27,13 @@ def test_json_report_round_trips(tmp_path: Path) -> None:
     rpt = _populated_report(tmp_path / "repo")
     out = tmp_path / "out"
     out.mkdir()
-    json_path, md_path = write_reports(rpt, out)
+    json_path, summary_path, details_path = write_reports(rpt, out)
 
     parsed = json.loads(json_path.read_text(encoding="utf-8"))
     assert parsed["scanner"] == "recklock-discover"
     assert parsed["findings_count"] == rpt.findings_count
+    assert summary_path.exists()
+    assert details_path.exists()
     assert "findings" in parsed
     for f in parsed["findings"]:
         for s in f["signals"]:
@@ -42,8 +44,10 @@ def test_json_report_round_trips(tmp_path: Path) -> None:
 def test_markdown_report_includes_key_sections(tmp_path: Path) -> None:
     rpt = _populated_report(tmp_path / "repo")
     md = render_markdown_report(rpt)
-    assert "# ReckLock Discover Report" in md
+    assert "# Details of findings" in md
+    assert "## Executive overview (~10 seconds)" in md
     assert "## Scan Summary" in md
+    assert "<details>" in md
     assert "### Findings by risk" in md
     assert "## Critical Findings" in md
     assert "## High-Risk Findings" in md
@@ -58,7 +62,7 @@ def test_markdown_report_includes_key_sections(tmp_path: Path) -> None:
 def test_markdown_report_handles_empty_repo(tmp_path: Path) -> None:
     rpt = scan_repository(tmp_path)
     md = render_markdown_report(rpt)
-    assert "# ReckLock Discover Report" in md
+    assert "# Details of findings" in md
     assert "No automation, agents, or sensitive workflows were detected" in md
 
 

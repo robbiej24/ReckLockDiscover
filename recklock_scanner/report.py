@@ -5,8 +5,13 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from recklock_scanner.constants import DEFAULT_JSON_FILENAME, DEFAULT_MARKDOWN_FILENAME
+from recklock_scanner.constants import (
+    DEFAULT_DETAILS_MARKDOWN_FILENAME,
+    DEFAULT_JSON_FILENAME,
+    DEFAULT_SUMMARY_MARKDOWN_FILENAME,
+)
 from recklock_scanner.models import ScannerFinding, ScannerReport
+from recklock_scanner.registry_prompts import registry_candidate_count
 
 
 def write_json_report(report: ScannerReport, out_path: Path) -> Path:
@@ -22,6 +27,114 @@ def write_json_report(report: ScannerReport, out_path: Path) -> Path:
 
 def _by_id(findings: list[ScannerFinding]) -> dict[str, ScannerFinding]:
     return {f.finding_id: f for f in findings}
+
+
+def _priority_counts(report: ScannerReport) -> tuple[int, int, int]:
+    """Critical + high findings, registry-ready count, total findings."""
+    crit_high = sum(
+        1 for f in report.findings if f.risk_level in ("critical", "high")
+    )
+    reg_ready = registry_candidate_count(report)
+    return crit_high, reg_ready, report.findings_count
+
+
+def _md_read_this_first(
+    report: ScannerReport,
+    *,
+    json_name: str,
+    details_md_name: str,
+    summary_md_name: str,
+) -> list[str]:
+    crit_high, reg_ready, total = _priority_counts(report)
+    lines = [
+        "## Executive overview (~10 seconds)",
+        "",
+        "| Priority | Do this |",
+        "| --- | --- |",
+        f"| **Totals** | **{total}** findings in this scan |",
+    ]
+    if crit_high:
+        lines.append(
+            f"| **Risk** | Review **{crit_high}** critical/high items → "
+            "[Critical Findings](#critical-findings) & [High-Risk Findings](#high-risk-findings) |"
+        )
+    else:
+        lines.append("| **Risk** | No critical/high findings — skim [AI Agent Candidates](#ai-agent-candidates) if relevant |")
+
+    if reg_ready:
+        lines.append(
+            f"| **Registry** | **{reg_ready}** manifest-ready finding(s) — run "
+            "`recklock-discover scan <repo> --export-manifests` (see [Registry candidates](#suggested-recklock-registry-candidates)) |"
+        )
+    else:
+        lines.append("| **Registry** | Nothing flagged for Registry export this run |")
+
+    lines.extend(
+        [
+            f"| **Files** | Machine-readable: `{json_name}` · **Summary of findings:** `{summary_md_name}` · "
+            f"**Details of findings:** `{details_md_name}` |",
+            "",
+            "_Heuristic scan — verify before acting._",
+            "",
+            "---",
+            "",
+        ]
+    )
+    return lines
+
+
+def render_summary_of_findings_markdown(report: ScannerReport, *, output_dir: Path) -> str:
+    """Short executive summary for humans (≈10 seconds)."""
+    crit_high, reg_ready, total = _priority_counts(report)
+    scanned = report.scanned_path
+    root = Path(scanned).resolve()
+    out = output_dir.resolve()
+
+    lines = [
+        "# Summary of findings",
+        "",
+        "_ReckLock Discover — quick read. See **Details of findings** for full evidence._",
+        "",
+        f"- **Scanned:** `{scanned}`",
+        f"- **Findings:** {total} (critical/high: **{crit_high}**, Registry-ready: **{reg_ready}**)",
+        "",
+        "## What to do next",
+        "",
+    ]
+    if crit_high:
+        lines.append(
+            f"1. **Risk** — open **Details of findings** (`{DEFAULT_DETAILS_MARKDOWN_FILENAME}`) → Critical & High sections."
+        )
+    else:
+        lines.append("1. **Skim** — open details only if you care about agents, CI/CD, or finance workflows.")
+
+    if reg_ready:
+        lines.append(
+            "2. **Registry** — export draft manifests (review YAML before commit):"
+        )
+        lines.extend(
+            [
+                "",
+                "```bash",
+                f'recklock-discover scan "{root}" --output-dir "{out}" --export-manifests',
+                "```",
+                "",
+            ]
+        )
+    else:
+        lines.append("2. **Registry** — nothing queued for manifest export this run.")
+
+    lines.extend(
+        [
+            f"3. **Evidence** — per-file depth lives in `{DEFAULT_DETAILS_MARKDOWN_FILENAME}` (section **All findings**).",
+            "",
+            "---",
+            "",
+            "_Static analysis only — not proof of runtime behavior._",
+            "",
+        ]
+    )
+    return "\n".join(lines)
 
 
 def _md_header(report: ScannerReport) -> list[str]:
@@ -114,10 +227,28 @@ def _md_finding_block(f: ScannerFinding) -> list[str]:
     ]
 
 
-def render_markdown_report(report: ScannerReport) -> str:
+def render_markdown_report(
+    report: ScannerReport,
+    *,
+    json_filename: str = DEFAULT_JSON_FILENAME,
+    details_markdown_filename: str = DEFAULT_DETAILS_MARKDOWN_FILENAME,
+    summary_markdown_filename: str = DEFAULT_SUMMARY_MARKDOWN_FILENAME,
+) -> str:
     """Render Markdown suitable for GitHub issues, PRs, or docs."""
     parts: list[str] = []
-    parts.extend(_md_header(report))
+    parts.append("# Details of findings")
+    parts.append("")
+    parts.append("_ReckLock Discover — full narrative & evidence._")
+    parts.append("")
+    parts.extend(
+        _md_read_this_first(
+            report,
+            json_name=json_filename,
+            details_md_name=details_markdown_filename,
+            summary_md_name=summary_markdown_filename,
+        )
+    )
+    parts.extend(_md_header(report)[2:])  # skip duplicate H1 + blank (already added)
 
     parts.extend(_md_summary_table("Findings by type", report.findings_by_type))
     parts.extend(_md_summary_table("Findings by risk", report.findings_by_risk))
@@ -192,8 +323,16 @@ def render_markdown_report(report: ScannerReport) -> str:
         parts.append("_No automation, agents, or sensitive workflows were detected._")
         parts.append("")
     else:
+        parts.append(
+            "<details>\n\n"
+            "<summary><strong>Full per-file evidence (collapsed — open when you need depth)</strong></summary>\n\n"
+        )
+        parts.append("")
         for f in report.findings:
             parts.extend(_md_finding_block(f))
+        parts.append("")
+        parts.append("</details>")
+        parts.append("")
 
     parts.append("---")
     parts.append("")
@@ -205,10 +344,31 @@ def render_markdown_report(report: ScannerReport) -> str:
     return "\n".join(parts)
 
 
-def write_markdown_report(report: ScannerReport, out_path: Path) -> Path:
+def write_markdown_report(
+    report: ScannerReport,
+    out_path: Path,
+    *,
+    json_filename: str = DEFAULT_JSON_FILENAME,
+) -> Path:
     """Write a Markdown view of *report*."""
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(render_markdown_report(report), encoding="utf-8")
+    body = render_markdown_report(
+        report,
+        json_filename=json_filename,
+        details_markdown_filename=out_path.name,
+        summary_markdown_filename=DEFAULT_SUMMARY_MARKDOWN_FILENAME,
+    )
+    out_path.write_text(body, encoding="utf-8")
+    return out_path
+
+
+def write_summary_of_findings_report(report: ScannerReport, out_path: Path) -> Path:
+    """Executive summary Markdown — open first in CI artifacts."""
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(
+        render_summary_of_findings_markdown(report, output_dir=out_path.parent),
+        encoding="utf-8",
+    )
     return out_path
 
 
@@ -217,10 +377,16 @@ def write_reports(
     output_dir: Path,
     *,
     json_filename: str = DEFAULT_JSON_FILENAME,
-    markdown_filename: str = DEFAULT_MARKDOWN_FILENAME,
-) -> tuple[Path, Path]:
-    """Write both JSON & Markdown reports into *output_dir*; return their paths."""
+    details_markdown_filename: str = DEFAULT_DETAILS_MARKDOWN_FILENAME,
+    summary_markdown_filename: str = DEFAULT_SUMMARY_MARKDOWN_FILENAME,
+) -> tuple[Path, Path, Path]:
+    """Write JSON, summary Markdown, & details Markdown into *output_dir*."""
     output_dir.mkdir(parents=True, exist_ok=True)
     json_path = write_json_report(report, output_dir / json_filename)
-    md_path = write_markdown_report(report, output_dir / markdown_filename)
-    return json_path, md_path
+    summary_path = write_summary_of_findings_report(report, output_dir / summary_markdown_filename)
+    details_path = write_markdown_report(
+        report,
+        output_dir / details_markdown_filename,
+        json_filename=json_filename,
+    )
+    return json_path, summary_path, details_path

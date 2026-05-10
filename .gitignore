@@ -29,5 +29,6 @@ coverage.xml
 *.cover
 .DS_Store
 recklock_discover_scan_report.json
-recklock_discover_scan_report.md
+recklock_discover_summary_of_findings.md
+recklock_discover_details_of_findings.md
 /recklock_manifest_exports/

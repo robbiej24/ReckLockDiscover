@@ -1,11 +1,11 @@
 # ReckLock Discover — manual GitHub Actions workflow (repo root = composite action).
 # Mirrored to https://github.com/robbiej24/ReckLockDiscover
 #
-# What it does: checkout pinned tag → offline scan → artifact with JSON & Markdown reports.
-# How to run & risks: docs/github-actions.md
+# Checkout uses inputs.recklock_release (string; default = current Discover release tag).
+# GitHub loads this YAML from **Use workflow from** — pick **main** or that release tag so defaults stay current.
 #
-# For stable runs: set "Use workflow from" to v1.0.2 to match recklock_release (see docs/github-actions.md).
-# OSS mirror: fine-grained RECKLOCK_OSS_SYNC_TOKEN needs Contents + Workflows read/write on robbiej24/ReckLockDiscover (Actions alone does not authorize edits under .github/workflows/).
+# How to run & risks: docs/github-actions.md
+# OSS mirror: fine-grained RECKLOCK_OSS_SYNC_TOKEN needs Contents + Workflows read/write on robbiej24/ReckLockDiscover.
 
 name: ReckLock Discover
 
@@ -13,12 +13,10 @@ on:
   workflow_dispatch:
     inputs:
       recklock_release:
-        description: "Pinned ReckLock Discover release tag to scan"
-        type: choice
+        description: "Git tag (or branch ref) to checkout before scanning — default is current Discover release tag"
+        type: string
         required: true
-        default: v1.0.2
-        options:
-          - v1.0.2
+        default: v1.0.4
 
 permissions:
   contents: read
@@ -37,8 +35,25 @@ jobs:
           repo-path: .
           output-dir: recklock-reports
 
+      - name: Workflow summary — where to find reports
+        run: |
+          {
+            echo "## ReckLock Discover — reports"
+            echo ""
+            echo "Download artifact **recklock-discover-reports**, then open:"
+            echo ""
+            echo "1. **\`recklock_discover_summary_of_findings.md\`** — executive summary (~10s)"
+            echo "2. **\`recklock_discover_details_of_findings.md\`** — full narrative & evidence"
+            echo "3. **\`recklock_discover_scan_report.json\`** — machine-readable"
+            echo ""
+            echo "This job scanned the checked-out repository root (\`repo-path: .\`). Use the same Git tag for **Use workflow from** & **recklock_release** for a consistent snapshot."
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Upload scan reports
         uses: actions/upload-artifact@v6
         with:
           name: recklock-discover-reports
-          path: recklock-reports/recklock_discover_scan_report.*
+          path: |
+            recklock-reports/recklock_discover_scan_report.json
+            recklock-reports/recklock_discover_summary_of_findings.md
+            recklock-reports/recklock_discover_details_of_findings.md

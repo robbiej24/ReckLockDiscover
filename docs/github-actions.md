@@ -5,7 +5,11 @@ This page explains **what the manual ReckLock Discover workflow does**, **how to
 - The **standalone** repo [`robbiej24/ReckLockDiscover`](https://github.com/robbiej24/ReckLockDiscover) (mirrored from the HealthyLineups monorepo subtree).
 - **HealthyLineups** when the same workflow lives under `.github/workflows/` at the monorepo root & invokes the composite action under `Core/ReckLockFamily/ReckLockShield/ReckLockDiscover`.
 
-The current **release line** described here is **`v1.0.2`** (Git tag, package **`1.0.2`**, & `SCANNER_VERSION` in code). Keep those aligned when you cut **`v1.0.3`** or later.
+When maintainers publish a new Discover release, they bump **`pyproject.toml`**, **`recklock_scanner/constants.py` (`SCANNER_VERSION`)**, the **`recklock_release`** default in the workflow, then create the matching **`v…`** Git tag on repos where tags matter. **Documentation does not name specific tags** so it stays valid across releases.
+
+GitHub **loads the workflow form from whatever ref you pick under “Use workflow from.”** If that ref is an **older tag**, you will still see **older defaults**. Prefer **`main`** (or the release tag you just cut) so the form matches the latest workflow file.
+
+On **`robbiej24/ReckLockDiscover`**, subtree mirroring updates **`main`** automatically but **does not copy Git tags** from HealthyLineups — add the release tag on that repo too if you need **Use workflow from** → tag parity.
 
 Shorter pointers also live in the **workflow YAML comments** at the top of `.github/workflows/recklock-discover.yml` & in the **`description`** field of `action.yml`.
 
@@ -13,9 +17,10 @@ Shorter pointers also live in the **workflow YAML comments** at the top of `.git
 
 ## What the workflow does
 
-1. **Checks out** a **pinned release tag** of the repository (default **`v1.0.2`**) so the scan runs against a **known, immutable** tree.
+1. **Checks out** the Git ref supplied by **`recklock_release`** (a **string**, prefilled with the **current** Discover release tag default from this workflow file) so the scan runs against a **known** snapshot.
 2. Runs the **ReckLock Discover** composite action: installs the scanner from that checkout & executes `recklock-discover scan` over the repo root (or configured path).
-3. **Uploads** the generated **`recklock_discover_scan_report.json`** & **`.md`** files as a workflow **artifact** named `recklock-discover-reports`.
+3. Writes **`recklock_discover_scan_report.json`**, **`recklock_discover_summary_of_findings.md`** (executive summary), & **`recklock_discover_details_of_findings.md`** (full narrative) into the configured output directory.
+4. **Uploads** those files as a workflow **artifact** named `recklock-discover-reports` & adds a short **job summary** pointing at them.
 
 The scanner itself is **offline static analysis** (filesystem walk + deterministic detectors). It does **not** call vendor LLM APIs, does **not** upload your source to a third party, & does **not** phone home. See [Security & privacy guarantees](../README.md#security--privacy-guarantees) in the README for product-level guarantees; the sections below add a **GitHub Actions–specific** trust picture.
 
@@ -26,19 +31,18 @@ The scanner itself is **offline static analysis** (filesystem walk + determinist
 1. Open the repository on GitHub → **Actions**.
 2. Select **ReckLock Discover** in the workflow list.
 3. Click **Run workflow**.
-4. **Use workflow from** — Select **`v1.0.2`** (the release tag). That loads the **workflow YAML** from the same snapshot as the scanner checkout, so **documentation, workflow inputs, & code stay aligned**. GitHub may **default** this dropdown to your **default branch** (often named `main`); change it to **`v1.0.2`** unless you are deliberately testing an unreleased workflow change.
-5. **Pinned ReckLock Discover release tag to scan** — leave **`v1.0.2`** (or pick the only option). This controls **`actions/checkout`** & therefore **which snapshot of the codebase** gets scanned. **Match this to the same tag you chose in step 4** for normal runs.
-6. Start the run. When it finishes, open the run → **Artifacts** → download **`recklock-discover-reports`**.
+4. **Use workflow from** — Pick **`main`** or the **same** Git tag you intend to scan with **`recklock_release`**. That decides **which copy of this YAML** GitHub uses — including the prefilled **`recklock_release`** default. GitHub often defaults this control to **main**; staying on an **old tag** here is the usual reason people still see **old** defaults in the form.
+5. **Pinned ReckLock Discover release tag to scan** (`recklock_release`) — Leave the **prefilled** tag unless you mean to scan another ref (branch names allowed). It must exist on this repository (GitHub checks out that ref **before** the composite action runs).
+6. Start the run. When it finishes, open the run → **Summary** for file pointers → **Artifacts** → download **`recklock-discover-reports`**. Open **`recklock_discover_summary_of_findings.md`** first (executive read), then **`recklock_discover_details_of_findings.md`** when you need depth.
 
 ### CLI (optional)
 
-If you prefer the terminal & have [`gh`](https://cli.github.com/) configured, load the workflow **from** the release tag & pass the same tag as the scan ref:
+If you prefer the terminal & have [`gh`](https://cli.github.com/) configured, pass the **same ref** for **`--ref`** (which workflow file Git loads) & **`-f recklock_release=`** (checkout ref), unless you are experimenting. Example using **`main`** for both:
 
 ```bash
-gh workflow run recklock-discover.yml --ref v1.0.2 -f recklock_release=v1.0.2
+REFSPEC=main
+gh workflow run recklock-discover.yml --ref "$REFSPEC" -f recklock_release="$REFSPEC"
 ```
-
-Use a different `--ref` only when you intend to run a **non-release** copy of the workflow file (for example a branch with experimental YAML).
 
 ---
 
@@ -49,7 +53,7 @@ Use a different `--ref` only when you intend to run a **non-release** copy of th
 | **HealthyLineups** | `.github/workflows/recklock-discover.yml` | `./Core/ReckLockFamily/ReckLockShield/ReckLockDiscover` |
 | **ReckLockDiscover (OSS)** | `.github/workflows/recklock-discover.yml` | `./` (repo root is the action) |
 
-Behavior is the same: **checkout pinned tag → scan → upload reports**.
+Behavior is the same: **checkout chosen ref → scan → upload reports**.
 
 ---
 
@@ -59,7 +63,7 @@ Behavior is the same: **checkout pinned tag → scan → upload reports**.
 
 | Input | Meaning |
 | --- | --- |
-| **`recklock_release`** | Git ref (tag) to check out before scanning. Today the only choice is **`v1.0.2`**, matching the [release tag](https://github.com/robbiej24/ReckLockDiscover/releases/tag/v1.0.2) on the OSS repo once published. |
+| **`recklock_release`** | Git ref (tag or branch) to check out before scanning. The UI shows the **default string** from this workflow file; edit only when you intend to scan a different ref. |
 
 ### Composite action inputs (when you call the action yourself)
 
@@ -68,7 +72,7 @@ See `action.yml` for the full list (`repo-path`, `output-dir`, `min-confidence`,
 ### Artifacts
 
 - **Name:** `recklock-discover-reports`
-- **Files:** `recklock_discover_scan_report.json` & `recklock_discover_scan_report.md` under the configured output directory.
+- **Files:** `recklock_discover_summary_of_findings.md`, `recklock_discover_details_of_findings.md`, & `recklock_discover_scan_report.json` under the configured output directory.
 
 Artifact retention follows **repository / org retention settings**. Treat downloads like any other security review material.
 
@@ -88,11 +92,11 @@ Artifact retention follows **repository / org retention settings**. Treat downlo
 
 **Reports may still be sensitive.** Paths, filenames, partial code snippets, & signal labels can reveal architecture or internal project names. **Redaction** reduces raw secret echoing but is not a guarantee against every disclosure; do not post full artifacts in public threads if the repo is private for a reason.
 
-**Two GitHub dropdowns:** **Use workflow from** picks the **workflow file** revision; **`recklock_release`** picks the **checkout** for the scan. If you mix—for example **Use workflow from** = default branch & **`recklock_release`** = **`v1.0.2`**—you may run **newer YAML** against an **older** tree, or the reverse. For **predictable, reviewable runs**, set **both** to **`v1.0.2`**.
+**Two GitHub controls:** **Use workflow from** picks the **workflow file** revision; **`recklock_release`** picks the **checkout** for the scan. If you mix—for example **Use workflow from** = default branch while **`recklock_release`** = an older tag—you may run **newer YAML** against an **older** tree, or the reverse. For **predictable, reviewable runs**, use the **same release tag** for both.
 
 **Large monorepos:** scans are bounded by built-in file / size caps in the scanner; very large trees may skip or truncate per product limits (see architecture docs).
 
-**Upgrades:** when you ship **`v1.0.3`**, add it to the workflow **`options`** list, bump **`pyproject.toml`**, **`recklock_scanner/constants.py`**, & this doc together, then tag & mirror.
+**Shipping a new Discover version:** bump package version & `SCANNER_VERSION`, update the **`recklock_release`** default string in the workflow, tag the repo, & mirror to OSS if you use the split publishing flow.
 
 ---
 

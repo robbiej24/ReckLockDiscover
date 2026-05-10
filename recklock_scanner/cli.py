@@ -9,6 +9,7 @@ from typing import Literal
 
 import typer
 from rich.console import Console
+from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.table import Table
 
@@ -19,6 +20,11 @@ from recklock_scanner.manifest_export import (
     export_manifests,
 )
 from recklock_scanner.models import Confidence, ScannerReport
+from recklock_scanner.registry_prompts import (
+    registry_candidate_count,
+    registry_cli_commands,
+    registry_opt_in_prompt,
+)
 from recklock_scanner.report import write_reports
 from recklock_scanner.scanner import scan_repository
 
@@ -37,34 +43,39 @@ ConfidenceOption = Literal["low", "medium", "high"]
 OutputFormat = Literal["human", "json"]
 
 
-def registry_candidate_count(report: ScannerReport) -> int:
-    """Count findings that can become ReckLock Registry manifest drafts."""
-    return sum(1 for finding in report.findings if finding.recommended_action in EXPORTABLE_ACTIONS)
-
-
-def registry_opt_in_prompt(count: int) -> str:
-    plural = "" if count == 1 else "s"
-    return (
-        f"ReckLock Discover found {count} AI agent{plural}. Add them to your ReckLock Registry so you can display:\n\n"
-        "- That you own them\n"
-        "- What their capabilities are\n"
-        "- Which risks they carry &\n"
-        "- Allow other people who want to license your agents to contact you?"
+def emit_registry_follow_up_for_noninteractive(
+    report: ScannerReport,
+    *,
+    scanned_path: Path,
+    output_dir: Path,
+) -> None:
+    """Print Registry guidance when stdin is not a TTY (CI, scripts, Action logs)."""
+    count = registry_candidate_count(report)
+    if count == 0 or sys.stdin.isatty():
+        return
+    body = registry_opt_in_prompt(count) + "\n\n" + registry_cli_commands(scanned_path, output_dir)
+    _console.print(
+        Panel.fit(
+            body,
+            title="ReckLock Registry — next step",
+            border_style="cyan",
+        )
     )
 
 
-def should_export_registry_manifests(
+def confirm_registry_export_interactive(
     report: ScannerReport,
     *,
     add_to_registry: bool | None,
     output_format: OutputFormat,
 ) -> bool:
-    """Resolve explicit opt-in/out flags and the interactive local prompt."""
+    """Interactive opt-in only when running in a terminal (local developer)."""
     if add_to_registry is not None:
-        return add_to_registry
-    if output_format != "human" or registry_candidate_count(report) == 0 or not sys.stdin.isatty():
         return False
-    return typer.confirm(registry_opt_in_prompt(registry_candidate_count(report)), default=False)
+    count = registry_candidate_count(report)
+    if output_format != "human" or count == 0 or not sys.stdin.isatty():
+        return False
+    return typer.confirm(registry_opt_in_prompt(count), default=False)
 
 
 def export_registry_manifests(
@@ -92,7 +103,7 @@ def run_scan(
     min_confidence: Confidence | None = None,
     export_manifests_flag: bool = False,
     manifest_export_dir: Path | None = None,
-) -> tuple[ScannerReport, Path, Path, Path | None, list[tuple[Path, bool, str]]]:
+) -> tuple[ScannerReport, Path, Path, Path, Path | None, list[tuple[Path, bool, str]]]:
     """Run a scan & write JSON/Markdown reports. Optionally export manifests."""
     report = scan_repository(
         path,
@@ -101,7 +112,7 @@ def run_scan(
         min_confidence=min_confidence,
     )
     out_dir = (output_dir or Path.cwd()).resolve()
-    json_path, md_path = write_reports(report, out_dir)
+    json_path, summary_path, details_path = write_reports(report, out_dir)
 
     manifest_dir: Path | None = None
     manifest_results: list[tuple[Path, bool, str]] = []
@@ -111,7 +122,7 @@ def run_scan(
             output_dir=out_dir,
             manifest_export_dir=manifest_export_dir,
         )
-    return report, json_path, md_path, manifest_dir, manifest_results
+    return report, json_path, summary_path, details_path, manifest_dir, manifest_results
 
 
 def report_to_json(report: ScannerReport) -> str:
@@ -222,7 +233,7 @@ def scan_command(
             console=_console,
         ) as progress:
             progress.add_task(description="Scanning repository…", total=None)
-            report, json_path, md_path, manifest_export_dir, manifest_results = run_scan(
+            report, json_path, summary_path, details_path, manifest_export_dir, manifest_results = run_scan(
                 path,
                 output_dir=output_dir,
                 include=include,
@@ -239,7 +250,13 @@ def scan_command(
         typer.echo(report_to_json(report))
         return
 
-    if manifest_export_dir is None and should_export_registry_manifests(
+    emit_registry_follow_up_for_noninteractive(
+        report,
+        scanned_path=path,
+        output_dir=json_path.parent,
+    )
+
+    if manifest_export_dir is None and confirm_registry_export_interactive(
         report,
         add_to_registry=add_to_registry,
         output_format=output_format,
@@ -252,7 +269,8 @@ def scan_command(
 
     print_rich_summary(report)
     _console.print(f"  [dim]json_report[/dim]   {json_path}")
-    _console.print(f"  [dim]md_report[/dim]     {md_path}")
+    _console.print(f"  [dim]summary_md[/dim]    {summary_path}")
+    _console.print(f"  [dim]details_md[/dim]    {details_path}")
     if manifest_export_dir is not None:
         written = sum(1 for _, w, _ in manifest_results if w)
         skipped = sum(1 for _, w, _ in manifest_results if not w)

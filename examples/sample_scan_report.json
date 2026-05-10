@@ -51,7 +51,7 @@
           "category": "ci_cd",
           "line_number": 9,
           "name": "GitHub Actions workflow body",
-          "redacted_snippet": "      - uses: actions/checkout@v4"
+          "redacted_snippet": "      - uses: actions/checkout@v6"
         }
       ]
     },
@@ -217,5 +217,5 @@
   "scanned_at": "2026-05-08T21:09:06Z",
   "scanned_path": "examples/sample_repo",
   "scanner": "recklock-discover",
-  "scanner_version": "1.0.2"
+  "scanner_version": "1.0.4"
 }

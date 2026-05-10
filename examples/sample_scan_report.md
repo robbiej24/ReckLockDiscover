@@ -1,8 +1,10 @@
-# ReckLock Discover Report
+# Details of findings
+
+_ReckLock Discover — full narrative & evidence._
 
 ## Scan Summary
 
-- **Scanner version:** `1.0.2`
+- **Scanner version:** `1.0.4`
 - **Scanned path:** `examples/sample_repo`
 - **Scanned at:** `2026-05-08T21:09:06Z`
 - **Files scanned:** 4
@@ -85,7 +87,7 @@ _Findings tagged **register** or **manual_review** — strong registry candidate
   - **GitHub Actions workflow file** (ci_cd, filename match)
   - **cron / crontab** (schedule, line 4) — `    - cron: "0 6 * * *"`
   - **GitHub Actions schedule** (schedule, line 2) — `on:`
-  - **GitHub Actions workflow body** (ci_cd, line 9) — `      - uses: actions/checkout@v4`
+  - **GitHub Actions workflow body** (ci_cd, line 9) — `      - uses: actions/checkout@v6`
 
 ### `deploy/production.sh` — Production
 

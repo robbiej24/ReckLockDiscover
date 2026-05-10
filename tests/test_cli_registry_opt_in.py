@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from recklock_scanner.cli import app, registry_opt_in_prompt
+from recklock_scanner.cli import app
+from recklock_scanner.registry_prompts import registry_opt_in_prompt
 from typer.testing import CliRunner
 
 
