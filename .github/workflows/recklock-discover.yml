@@ -4,7 +4,7 @@
 # What it does: checkout pinned tag → offline scan → artifact with JSON & Markdown reports.
 # How to run & risks: docs/github-actions.md
 #
-# For stable runs: set "Use workflow from" to v1.0.1 to match recklock_release (see docs/github-actions.md).
+# For stable runs: set "Use workflow from" to v1.0.2 to match recklock_release (see docs/github-actions.md).
 # OSS mirror: fine-grained RECKLOCK_OSS_SYNC_TOKEN needs Contents + Workflows read/write on robbiej24/ReckLockDiscover (Actions alone does not authorize edits under .github/workflows/).
 
 name: ReckLock Discover
@@ -16,9 +16,9 @@ on:
         description: "Pinned ReckLock Discover release tag to scan"
         type: choice
         required: true
-        default: v1.0.1
+        default: v1.0.2
         options:
-          - v1.0.1
+          - v1.0.2
 
 permissions:
   contents: read

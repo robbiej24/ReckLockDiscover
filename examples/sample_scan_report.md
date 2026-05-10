@@ -2,7 +2,7 @@
 
 ## Scan Summary
 
-- **Scanner version:** `1.0.1`
+- **Scanner version:** `1.0.2`
 - **Scanned path:** `examples/sample_repo`
 - **Scanned at:** `2026-05-08T21:09:06Z`
 - **Files scanned:** 4

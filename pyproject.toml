@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "recklock-discover"
-version = "1.0.1"
+version = "1.0.2"
 description = "Static analyzer that finds AI agents, CI/CD workflows, deploy scripts & sensitive paths in your repo"
 readme = "README.md"
 license = "MIT"
