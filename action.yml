@@ -1,5 +1,5 @@
 name: "ReckLock Discover"
-description: "Offline static analyzer that finds AI agents, automations, CI/CD workflows, deploy scripts & sensitive execution paths in your repository."
+description: "Offline static analyzer: scans a checkout for AI agents, automations, CI/CD workflows, deploy scripts & sensitive execution paths (no remote code upload). In CI, pair with actions/checkout & upload-artifact; see docs/github-actions.md for the manual workflow, permissions, outputs & risks."
 inputs:
   repo-path:
     description: "Repository path to scan."

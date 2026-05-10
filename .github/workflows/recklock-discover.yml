@@ -1,10 +1,23 @@
-# Run from Actions → ReckLock Discover → Run workflow. This file is mirrored to
-# https://github.com/robbiej24/ReckLockDiscover (repo root); uses ./ for the composite action.
+# ReckLock Discover — manual GitHub Actions workflow (repo root = composite action).
+# Mirrored to https://github.com/robbiej24/ReckLockDiscover
+#
+# What it does: checkout pinned tag → offline scan → artifact with JSON & Markdown reports.
+# How to run & risks: docs/github-actions.md
+#
+# For stable runs: set "Use workflow from" to v1.0.1 to match recklock_release (see docs/github-actions.md).
 
 name: ReckLock Discover
 
 on:
   workflow_dispatch:
+    inputs:
+      recklock_release:
+        description: "Pinned ReckLock Discover release tag to scan"
+        type: choice
+        required: true
+        default: v1.0.1
+        options:
+          - v1.0.1
 
 permissions:
   contents: read
@@ -14,6 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.recklock_release }}
 
       - name: Scan repository
         uses: ./

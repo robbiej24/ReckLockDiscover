@@ -163,8 +163,18 @@ ReckLock Discover is useful **on its own** for visibility & inventory. If you us
 
 ---
 
+## GitHub Actions
+
+Run a **manual** scan from the **Actions** tab with the **ReckLock Discover** workflow: it checks out a **pinned release tag** (default **`v1.0.1`**), runs the same offline scanner as the CLI, & uploads **JSON & Markdown** reports as an artifact.
+
+- **Full guide:** **[docs/github-actions.md](docs/github-actions.md)** — how to run it (UI & CLI), what each step does, permissions, & risks (artifacts, heuristics, fork behavior).
+- **Quick context:** open `.github/workflows/recklock-discover.yml` in this repo for header comments & pointers.
+
+---
+
 ## Documentation
 
+- **[GitHub Actions workflow](docs/github-actions.md)** — manual workflow: usage, behavior, risks & trust  
 - **[Architecture](docs/architecture.md)** — how the scanner is structured  
 - **[Detection rules](docs/detection-rules.md)** — signal catalog  
 - **[Risk classification](docs/risk-classification.md)** — how findings become risk & actions  
