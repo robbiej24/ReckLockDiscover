@@ -1,0 +1,28 @@
+# Run from Actions → ReckLock Discover → Run workflow. This file is mirrored to
+# https://github.com/robbiej24/ReckLockDiscover (repo root); uses ./ for the composite action.
+
+name: ReckLock Discover
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan repository
+        uses: ./
+        with:
+          repo-path: .
+          output-dir: recklock-reports
+
+      - name: Upload scan reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: recklock-discover-reports
+          path: recklock-reports/recklock_discover_scan_report.*
