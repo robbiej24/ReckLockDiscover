@@ -5,6 +5,7 @@
 # How to run & risks: docs/github-actions.md
 #
 # For stable runs: set "Use workflow from" to v1.0.1 to match recklock_release (see docs/github-actions.md).
+# OSS mirror: fine-grained RECKLOCK_OSS_SYNC_TOKEN needs Contents + Workflows read/write on robbiej24/ReckLockDiscover (Actions alone does not authorize edits under .github/workflows/).
 
 name: ReckLock Discover
 
