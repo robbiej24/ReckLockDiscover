@@ -45,6 +45,8 @@ def test_markdown_report_includes_key_sections(tmp_path: Path) -> None:
     rpt = _populated_report(tmp_path / "repo")
     md = render_markdown_report(rpt)
     assert "# Details of findings" in md
+    assert "## Plain-language guide to each finding" in md
+    assert "## Registry fit for this scan (plain English)" in md
     assert "## Executive overview (~10 seconds)" in md
     assert "## Scan Summary" in md
     assert "<details>" in md

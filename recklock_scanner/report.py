@@ -12,6 +12,10 @@ from recklock_scanner.constants import (
 )
 from recklock_scanner.models import ScannerFinding, ScannerReport
 from recklock_scanner.registry_prompts import registry_candidate_count
+from recklock_scanner.report_plain_language import (
+    render_plain_language_findings_section,
+    render_registry_guidance_section,
+)
 
 
 def write_json_report(report: ScannerReport, out_path: Path) -> Path:
@@ -248,6 +252,8 @@ def render_markdown_report(
             summary_md_name=summary_markdown_filename,
         )
     )
+    parts.extend(render_plain_language_findings_section(report.findings))
+    parts.extend(render_registry_guidance_section(report))
     parts.extend(_md_header(report)[2:])  # skip duplicate H1 + blank (already added)
 
     parts.extend(_md_summary_table("Findings by type", report.findings_by_type))

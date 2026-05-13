@@ -1,7 +1,7 @@
 """Shared constants for ReckLock Discover."""
 
 # PyPI / CLI release version (keep in sync with pyproject.toml [project].version).
-SCANNER_VERSION = "1.0.4"
+SCANNER_VERSION = "1.0.5"
 
 # Expected value for metadata.registry_version in exported manifests (ReckLock Registry).
 MANIFEST_REGISTRY_VERSION = "0.1.0"

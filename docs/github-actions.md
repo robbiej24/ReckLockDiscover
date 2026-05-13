@@ -5,11 +5,15 @@ This page explains **what the manual ReckLock Discover workflow does**, **how to
 - The **standalone** repo [`robbiej24/ReckLockDiscover`](https://github.com/robbiej24/ReckLockDiscover) (mirrored from the HealthyLineups monorepo subtree).
 - **HealthyLineups** when the same workflow lives under `.github/workflows/` at the monorepo root & invokes the composite action under `Core/ReckLockFamily/ReckLockShield/ReckLockDiscover`.
 
-When maintainers publish a new Discover release, they bump **`pyproject.toml`**, **`recklock_scanner/constants.py` (`SCANNER_VERSION`)**, the **`recklock_release`** default in the workflow, then create the matching **`v…`** Git tag on repos where tags matter. **Documentation does not name specific tags** so it stays valid across releases.
+When maintainers publish a new Discover release, they bump **`pyproject.toml`**, **`recklock_scanner/constants.py` (`SCANNER_VERSION`)**, then create the matching **`v…`** Git tag on repos where tags matter. **Documentation does not name specific tags** so it stays valid across releases.
+
+**Workflow UI default:** GitHub’s **Run workflow** form prefills **`recklock_release`** from the **`default:`** string in this YAML. After each merge to **`main`** that touches the Discover subtree, **`ReckLock Discover — sync workflow default`** (`.github/workflows/recklock-discover-sync-workflow-default.yml`) runs **`scripts/sync_workflow_dispatch_default.py`** so both copies of **`recklock-discover.yml`** in HealthyLineups stay aligned with **`SCANNER_VERSION`** — no manual edit of **`default:`** should be necessary there.
+
+**OSS repo tags:** **`ReckLock OSS mirror sync`** (HealthyLineups `.github/workflows/recklock-oss-sync.yml`) pushes **`main`** to [`robbiej24/ReckLockDiscover`](https://github.com/robbiej24/ReckLockDiscover) **and** updates the lightweight Git tag **`v{SCANNER_VERSION}`** on that repo so the standalone Actions UI shows the same release tags as the monorepo. Requires secret **`RECKLOCK_OSS_SYNC_TOKEN`** with permission to push contents & tags.
+
+**Immutable checkout** still requires that tag to exist on whichever repo you run the workflow against; **`main` alone** is not an immutable ref for picky consumers.
 
 GitHub **loads the workflow form from whatever ref you pick under “Use workflow from.”** If that ref is an **older tag**, you will still see **older defaults**. Prefer **`main`** (or the release tag you just cut) so the form matches the latest workflow file.
-
-On **`robbiej24/ReckLockDiscover`**, subtree mirroring updates **`main`** automatically but **does not copy Git tags** from HealthyLineups — add the release tag on that repo too if you need **Use workflow from** → tag parity.
 
 Shorter pointers also live in the **workflow YAML comments** at the top of `.github/workflows/recklock-discover.yml` & in the **`description`** field of `action.yml`.
 
@@ -96,7 +100,7 @@ Artifact retention follows **repository / org retention settings**. Treat downlo
 
 **Large monorepos:** scans are bounded by built-in file / size caps in the scanner; very large trees may skip or truncate per product limits (see architecture docs).
 
-**Shipping a new Discover version:** bump package version & `SCANNER_VERSION`, update the **`recklock_release`** default string in the workflow, tag the repo, & mirror to OSS if you use the split publishing flow.
+**Shipping a new Discover version:** bump package version & `SCANNER_VERSION`, merge to **`main`** (the **sync workflow default** job patches **`recklock_discover.yml`** if needed), **`git push origin vX.Y.Z`**, & mirror to OSS if you use the split publishing flow (retag the OSS repo too).
 
 ---
 

@@ -16,8 +16,7 @@ on:
         description: "Git tag (or branch ref) to checkout before scanning — default is current Discover release tag"
         type: string
         required: true
-        default: v1.0.4
-
+        default: v1.0.5
 permissions:
   contents: read
 

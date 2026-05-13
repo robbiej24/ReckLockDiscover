@@ -217,5 +217,5 @@
   "scanned_at": "2026-05-08T21:09:06Z",
   "scanned_path": "examples/sample_repo",
   "scanner": "recklock-discover",
-  "scanner_version": "1.0.4"
+  "scanner_version": "1.0.5"
 }
