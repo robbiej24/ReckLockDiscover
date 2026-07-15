@@ -38,9 +38,7 @@ def _risk_sentence(risk_level: str, confidence: str, finding_type: FindingType) 
             "(for example money movement, production deploys, secrets, or privileged access)."
         )
     elif risk_level == "high":
-        parts.append(
-            "Rated **high** — meaningful exposure if behavior or access is broader than intended."
-        )
+        parts.append("Rated **high** — meaningful exposure if behavior or access is broader than intended.")
     elif risk_level == "medium":
         parts.append("Rated **medium** — worth tracking; impact depends on how it is wired in production.")
     else:
@@ -111,9 +109,7 @@ def render_plain_language_findings_section(findings: list[ScannerFinding]) -> li
             lines.append(f"   - **Detail:** {caps_line}")
         lines.append(f"   - **Why it is flagged:** {risk}")
         lines.append(f"   - **Recommended stance:** {stance}")
-        lines.append(
-            f"   - **Scanner note:** _{f.rationale}_"
-        )
+        lines.append(f"   - **Scanner note:** _{f.rationale}_")
         lines.append("")
     return lines
 
