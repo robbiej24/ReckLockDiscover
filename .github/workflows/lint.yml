@@ -26,3 +26,17 @@ jobs:
 
       - name: Ruff format
         run: ruff format --check recklock_scanner tests
+
+  # Branch protection on robbiej24/ReckLockDiscover requires a check named "Lint".
+  lint-pass:
+    name: Lint
+    runs-on: ubuntu-latest
+    needs: ruff
+    if: always()
+    steps:
+      - name: Require ruff success
+        run: |
+          if [ "${{ needs.ruff.result }}" != "success" ]; then
+            echo "ruff result: ${{ needs.ruff.result }}"
+            exit 1
+          fi
