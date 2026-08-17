@@ -5,7 +5,7 @@
 # GitHub loads this YAML from **Use workflow from** — pick **main** or that release tag so defaults stay current.
 #
 # How to run & risks: docs/github-actions.md
-# OSS mirror: fine-grained RECKLOCK_OSS_SYNC_TOKEN needs Contents + Workflows read/write on robbiej24/ReckLockDiscover.
+# OSS mirror: fine-grained RECKLOCK_OSS_SYNC_TOKEN needs Contents + Pull requests + Workflows read/write.
 
 name: ReckLock Discover
 
@@ -16,7 +16,7 @@ on:
         description: "Git tag (or branch ref) to checkout before scanning — default is current Discover release tag"
         type: string
         required: true
-        default: v1.0.5
+        default: v1.0.6
 permissions:
   contents: read
 
