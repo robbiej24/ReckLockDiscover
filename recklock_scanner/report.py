@@ -35,9 +35,7 @@ def _by_id(findings: list[ScannerFinding]) -> dict[str, ScannerFinding]:
 
 def _priority_counts(report: ScannerReport) -> tuple[int, int, int]:
     """Critical + high findings, registry-ready count, total findings."""
-    crit_high = sum(
-        1 for f in report.findings if f.risk_level in ("critical", "high")
-    )
+    crit_high = sum(1 for f in report.findings if f.risk_level in ("critical", "high"))
     reg_ready = registry_candidate_count(report)
     return crit_high, reg_ready, report.findings_count
 
@@ -63,12 +61,15 @@ def _md_read_this_first(
             "[Critical Findings](#critical-findings) & [High-Risk Findings](#high-risk-findings) |"
         )
     else:
-        lines.append("| **Risk** | No critical/high findings — skim [AI Agent Candidates](#ai-agent-candidates) if relevant |")
+        lines.append(
+            "| **Risk** | No critical/high findings — skim [AI Agent Candidates](#ai-agent-candidates) if relevant |"
+        )
 
     if reg_ready:
         lines.append(
             f"| **Registry** | **{reg_ready}** manifest-ready finding(s) — run "
-            "`recklock-discover scan <repo> --export-manifests` (see [Registry candidates](#suggested-recklock-registry-candidates)) |"
+            "`recklock-discover scan <repo> --export-manifests` "
+            "(see [Registry candidates](#suggested-recklock-registry-candidates)) |"
         )
     else:
         lines.append("| **Registry** | Nothing flagged for Registry export this run |")
@@ -107,15 +108,14 @@ def render_summary_of_findings_markdown(report: ScannerReport, *, output_dir: Pa
     ]
     if crit_high:
         lines.append(
-            f"1. **Risk** — open **Details of findings** (`{DEFAULT_DETAILS_MARKDOWN_FILENAME}`) → Critical & High sections."
+            f"1. **Risk** — open **Details of findings** (`{DEFAULT_DETAILS_MARKDOWN_FILENAME}`) "
+            "→ Critical & High sections."
         )
     else:
         lines.append("1. **Skim** — open details only if you care about agents, CI/CD, or finance workflows.")
 
     if reg_ready:
-        lines.append(
-            "2. **Registry** — export draft manifests (review YAML before commit):"
-        )
+        lines.append("2. **Registry** — export draft manifests (review YAML before commit):")
         lines.extend(
             [
                 "",
@@ -130,7 +130,8 @@ def render_summary_of_findings_markdown(report: ScannerReport, *, output_dir: Pa
 
     lines.extend(
         [
-            f"3. **Evidence** — per-file depth lives in `{DEFAULT_DETAILS_MARKDOWN_FILENAME}` (section **All findings**).",
+            f"3. **Evidence** — per-file depth lives in `{DEFAULT_DETAILS_MARKDOWN_FILENAME}` "
+            "(section **All findings**).",
             "",
             "---",
             "",
