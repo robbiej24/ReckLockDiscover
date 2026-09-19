@@ -33,5 +33,5 @@ def registry_cli_commands(scanned_path: Path, output_dir: Path | None) -> str:
         f'  recklock-discover scan "{root}" --output-dir "{out}" --export-manifests\n\n'
         "Or answer yes when prompted locally, or pass --add-to-registry for the same export.\n"
         "Manifests default to "
-        f'`{out}/recklock_manifest_exports/` (YAML drafts for human review).'
+        f"`{out}/recklock_manifest_exports/` (YAML drafts for human review)."
     )
