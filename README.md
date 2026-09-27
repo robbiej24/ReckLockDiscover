@@ -2,6 +2,42 @@
 
 **Find the AI agents, automations, CI/CD workflows, deployment scripts, and sensitive execution paths already hiding in your codebase.**
 
+
+
+<!-- hl-readme-agent:start -->
+## Agent quick access
+
+- New chat entry: `bash scripts/agent_task_entry.sh "<task>"` (from repo root).
+- Monorepo agent map: [`AGENTS.md`](../../../../AGENTS.md).
+- Stack pins: [`STACK_VERSIONS.md`](../../../../STACK_VERSIONS.md).
+- Pytest: `scripts/run-pytest.sh` or package `.venv/bin/python -m pytest` (never bare Homebrew `python3 -m pytest`).
+- AWS: agent shells use `AWS_PROFILE=hl-sso-ro` only; deploy/`hl-sso-admin` is human-only.
+
+<!-- hl-readme-agent:end -->
+
+<!-- hl-readme-stack:start -->
+## Current stack versions
+
+Direct dependencies from nearby manifests. Full monorepo inventory: [`STACK_VERSIONS.md`](../../../../STACK_VERSIONS.md). Regenerate with `python3 scripts/sync_readme_agent_sections.py`.
+
+### `Core/ReckLockFamily/ReckLockShield/ReckLockDiscover/pyproject.toml`
+
+- Package name: `recklock-discover`
+- Runtime: python >=3.11
+- Kind: `pyproject`
+
+| Package | Spec |
+|---|---|
+| `pydantic` | `>=2.5` |
+| `pytest [dev]` | `>=7.4` |
+| `pyyaml` | `>=6.0` |
+| `rich` | `>=13.7` |
+| `ruff [dev]` | `>=0.4` |
+| `typer` | `>=0.9` |
+
+
+<!-- hl-readme-stack:end -->
+
 ReckLock Discover is a **standalone**, **offline** static analyzer. It does not call remote APIs, does not upload your source code, and does not phone home. Run it locally from the CLI and get JSON & Markdown reports you can paste into GitHub issues or attach to security reviews.
 
 ---
