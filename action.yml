@@ -40,7 +40,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/setup-python@v6
+    - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
       with:
         python-version: "3.12"
     - name: Install ReckLock Discover
@@ -53,37 +53,37 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
-        SCAN_PATH="${{ inputs.repo-path }}"
+        SCAN_PATH="${INPUTS_REPO_PATH}"
         if [[ "$SCAN_PATH" != /* ]]; then
           SCAN_PATH="${{ github.workspace }}/$SCAN_PATH"
         fi
         OUT_ARGS=()
-        OD="${{ inputs.output-dir }}"
+        OD="${INPUTS_OUTPUT_DIR}"
         if [ -n "$OD" ]; then
           if [[ "$OD" != /* ]]; then
             OD="${{ github.workspace }}/$OD"
           fi
           OUT_ARGS+=(--output-dir "$OD")
         fi
-        MC="${{ inputs.min-confidence }}"
+        MC="${INPUTS_MIN_CONFIDENCE}"
         if [ -n "$MC" ]; then
           OUT_ARGS+=(--min-confidence "$MC")
         fi
-        INC="${{ inputs.include }}"
+        INC="${INPUTS_INCLUDE}"
         if [ -n "$INC" ]; then
           OUT_ARGS+=(--include "$INC")
         fi
-        EXC="${{ inputs.exclude }}"
+        EXC="${INPUTS_EXCLUDE}"
         if [ -n "$EXC" ]; then
           OUT_ARGS+=(--exclude "$EXC")
         fi
-        if [ "${{ inputs.export-manifests }}" = "true" ] || [ "${{ inputs.add-to-registry }}" = "true" ]; then
-          if [ "${{ inputs.add-to-registry }}" = "true" ]; then
+        if [ "${INPUTS_EXPORT_MANIFESTS}" = "true" ] || [ "${INPUTS_ADD_TO_REGISTRY}" = "true" ]; then
+          if [ "${INPUTS_ADD_TO_REGISTRY}" = "true" ]; then
             OUT_ARGS+=(--add-to-registry)
           else
             OUT_ARGS+=(--export-manifests)
           fi
-          MD="${{ inputs.manifest-dir }}"
+          MD="${INPUTS_MANIFEST_DIR}"
           if [ -n "$MD" ]; then
             if [[ "$MD" != /* ]]; then
               MD="${{ github.workspace }}/$MD"
@@ -91,5 +91,15 @@ runs:
             OUT_ARGS+=(--manifest-dir "$MD")
           fi
         fi
-        OUT_ARGS+=(--format "${{ inputs.format }}")
+        OUT_ARGS+=(--format "${INPUTS_FORMAT}")
         recklock-discover scan "$SCAN_PATH" "${OUT_ARGS[@]}"
+      env:
+        INPUTS_REPO_PATH: ${{ inputs.repo-path }}
+        INPUTS_OUTPUT_DIR: ${{ inputs.output-dir }}
+        INPUTS_MIN_CONFIDENCE: ${{ inputs.min-confidence }}
+        INPUTS_INCLUDE: ${{ inputs.include }}
+        INPUTS_EXCLUDE: ${{ inputs.exclude }}
+        INPUTS_EXPORT_MANIFESTS: ${{ inputs.export-manifests }}
+        INPUTS_ADD_TO_REGISTRY: ${{ inputs.add-to-registry }}
+        INPUTS_MANIFEST_DIR: ${{ inputs.manifest-dir }}
+        INPUTS_FORMAT: ${{ inputs.format }}
