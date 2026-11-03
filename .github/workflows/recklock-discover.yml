@@ -5,7 +5,7 @@
 # GitHub loads this YAML from **Use workflow from** — pick **main** or that release tag so defaults stay current.
 #
 # How to run & risks: docs/github-actions.md
-# OSS mirror: fine-grained RECKLOCK_OSS_SYNC_TOKEN needs Contents + Workflows read/write on robbiej24/ReckLockDiscover.
+# OSS mirror: fine-grained RECKLOCK_OSS_SYNC_TOKEN needs Contents + Pull requests + Workflows read/write.
 
 name: ReckLock Discover
 
@@ -16,7 +16,7 @@ on:
         description: "Git tag (or branch ref) to checkout before scanning — default is current Discover release tag"
         type: string
         required: true
-        default: v1.0.5
+        default: v1.0.6
 permissions:
   contents: read
 
@@ -24,12 +24,13 @@ jobs:
   discover:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           ref: ${{ inputs.recklock_release }}
+          persist-credentials: false
 
       - name: Scan repository
-        uses: ./
+        uses: $/
         with:
           repo-path: .
           output-dir: recklock-reports
@@ -49,7 +50,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload scan reports
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: recklock-discover-reports
           path: |
