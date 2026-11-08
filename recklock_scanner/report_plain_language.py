@@ -38,9 +38,7 @@ def _risk_sentence(risk_level: str, confidence: str, finding_type: FindingType) 
             "(for example money movement, production deploys, secrets, or privileged access)."
         )
     elif risk_level == "high":
-        parts.append(
-            "Rated **high** — meaningful exposure if behavior or access is broader than intended."
-        )
+        parts.append("Rated **high** — meaningful exposure if behavior or access is broader than intended.")
     elif risk_level == "medium":
         parts.append("Rated **medium** — worth tracking; impact depends on how it is wired in production.")
     else:
@@ -95,8 +93,10 @@ def render_plain_language_findings_section(findings: list[ScannerFinding]) -> li
     lines = [
         "## Plain-language guide to each finding",
         "",
-        "_Each `find_…` id below is the same row you will see later in this file — "
-        "spelled out here so you do not have to decode identifiers by memory._",
+        (
+            "_Each `find_…` id below is the same row you will see later in this file — "
+            "spelled out here so you do not have to decode identifiers by memory._"
+        ),
         "",
     ]
     if not findings:
@@ -111,9 +111,7 @@ def render_plain_language_findings_section(findings: list[ScannerFinding]) -> li
             lines.append(f"   - **Detail:** {caps_line}")
         lines.append(f"   - **Why it is flagged:** {risk}")
         lines.append(f"   - **Recommended stance:** {stance}")
-        lines.append(
-            f"   - **Scanner note:** _{f.rationale}_"
-        )
+        lines.append(f"   - **Scanner note:** _{f.rationale}_")
         lines.append("")
     return lines
 
@@ -129,8 +127,10 @@ def render_registry_guidance_section(report: ScannerReport) -> list[str]:
     lines = [
         "## Registry fit for this scan (plain English)",
         "",
-        "The ReckLock Registry is meant for **clear ownership & disclosure** of agents & sensitive automation — "
-        "not every line of CI deserves a catalog entry.",
+        (
+            "The ReckLock Registry is meant for **clear ownership & disclosure** of agents & sensitive automation — "
+            "not every line of CI deserves a catalog entry."
+        ),
         "",
     ]
 
@@ -143,9 +143,11 @@ def render_registry_guidance_section(report: ScannerReport) -> list[str]:
     if reg_primary:
         lines.extend(
             [
-                "These rows are tagged **register** or **manual_review**. "
-                "They are the best documentation targets: material automation with patterns that match known agent, "
-                "deploy, finance, or secret-handling shapes — after you confirm they are real & current.",
+                (
+                    "These rows are tagged **register** or **manual_review**. "
+                    "They are the best documentation targets: material automation with patterns that match known agent, "
+                    "deploy, finance, or secret-handling shapes — after you confirm they are real & current."
+                ),
                 "",
             ]
         )
@@ -219,9 +221,11 @@ def render_registry_guidance_section(report: ScannerReport) -> list[str]:
         [
             "### Why not everything is a Registry row",
             "",
-            "Registry entries work best when **identity, capabilities, & ownership** are stable. "
-            "Test fixtures, scanner source that merely mentions payments or deploy verbs, & noisy CI jobs "
-            "often fail that test — governing or monitoring them is still useful even when you skip the catalog.",
+            (
+                "Registry entries work best when **identity, capabilities, & ownership** are stable. "
+                "Test fixtures, scanner source that merely mentions payments or deploy verbs, & noisy CI jobs "
+                "often fail that test — governing or monitoring them is still useful even when you skip the catalog."
+            ),
             "",
         ]
     )
