@@ -7,6 +7,7 @@ from pathlib import Path
 from recklock_scanner.detectors import detect_signals_for_file
 from recklock_scanner.redaction import redact_line, redact_snippet
 from recklock_scanner.scanner import scan_repository
+from tests.secret_fixtures import github_pat_sample, openai_sk_sample, pem_private_key_one_line
 
 
 def _signal_names(text: str, name: str = "x.py") -> list[str]:
@@ -95,14 +96,15 @@ def test_redact_line_handles_env_assignments() -> None:
 
 
 def test_redact_line_handles_bearer_tokens() -> None:
-    line = "Authorization: Bearer ghp_aBcDeFgHiJkLmNoPqRsTuVwXyZ012345"
+    pat = github_pat_sample()
+    line = f"Authorization: Bearer {pat}"
     redacted = redact_line(line)
     assert "ghp_" not in redacted
     assert "REDACTED" in redacted
 
 
 def test_redact_line_handles_private_keys() -> None:
-    line = "key = '-----BEGIN PRIVATE KEY-----abcdefxyz12345-----END PRIVATE KEY-----'"
+    line = pem_private_key_one_line()
     redacted = redact_line(line)
     assert "BEGIN PRIVATE KEY" not in redacted
     assert "REDACTED" in redacted
@@ -121,13 +123,16 @@ def test_redact_snippet_truncates_long_lines() -> None:
 
 
 def test_scan_does_not_leak_secrets_in_signals(tmp_path: Path) -> None:
+    pat = github_pat_sample()
+    sk = openai_sk_sample()
     p = tmp_path / "leaky.py"
     p.write_text(
-        "API_KEY = 'sk-abcdefghijklmnopqrstuvwxyz1234567890ABCDE'\nTOKEN = 'ghp_aBcDeFgHiJkLmNoPqRsTuVwXyZ012345'\n",
+        f"API_KEY = '{sk}'\n"
+        f"TOKEN = '{pat}'\n",
         encoding="utf-8",
     )
     rpt = scan_repository(tmp_path)
     blob = "\n".join(s.redacted_snippet or "" for f in rpt.findings for s in f.signals)
     assert "sk-abcdefghijkl" not in blob
-    assert "ghp_aBcDeFgHiJkLmNoPqRsTuVwXyZ012345" not in blob
+    assert pat not in blob
     assert "REDACTED" in blob
